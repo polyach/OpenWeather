@@ -1,0 +1,44 @@
+<resources>
+    <string name="app_name">OpenWeather</string>
+
+    <string name="your_town">Your Town</string>
+    <string name="pressure">PRESSURE</string>
+    <string name="pressure_units">hPa</string>
+    <string name="humidity">HUMIDITY</string>
+    <string name="clouds">CLOUDS</string>
+    <string name="wind">WIND</string>
+    <string name="wind_units">m/s</string>
+    <string name="day_duration">DAY LENGTH</string>
+
+    <string name="GPS_is_not_available">Google Play Service is not available</string>
+    <string name="location_permission_denied">Location Permission Denied</string>
+    <string name="reading_weather_error">Error reading weather file</string>
+    <string name="reading_forecast_error">Error reading weather forecast file</string>
+    <string name="file_reading_error">Error reading settlement file</string>
+    <string name="can_not_find_location">Can\'t find location</string>
+    <string name="no_internet_connection">No Internet connection</string>
+    <string name="error_creating_database">Error creating database</string>
+    <string name="location_service_unavailable">Location service is unavailable</string>
+    <string name="rain">RAIN</string>
+    <string name="snow">SNOW</string>
+    <string name="rain_snow_units">mm</string>
+    <string name="high">High</string>
+    <string name="normal">Norm.</string>
+    <string name="low">Low</string>
+    <string name="precipitation_for_3_hours">mm for 3 hrs</string>
+    <string name="towns_read">towns found</string>
+    <string name="x_min_ago">min. ago</string>
+    <string name="find">Find</string>
+    <string name="my_location">My location</string>
+    <string name="north"> N</string>
+    <string name="south"> S</string>
+    <string name="east"> E</string>
+    <string name="west"> W</string>
+    <string name="country">Country:</string>
+    <string name="settlements_found">Settlements\nfound:</string>
+    <string name="chosen">Chosen:</string>
+    <string name="start_creating_database">Start creating a settlement database</string>
+    <string name="database_created">Settlement database created</string>
+    <string name="settlements_found1">settlements found</string>
+
+</resources>
