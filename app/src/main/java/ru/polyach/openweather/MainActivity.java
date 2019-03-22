@@ -83,24 +83,24 @@ public class MainActivity extends AppCompatActivity
     private String currentTownId;                                   // ID города в ручном режиме позиционирования (isByLocation = false), используется для запросов в этом режиме
     private String currentTown;                                     // Название текущего города (в любом режиме)
 
-    public static final String APP_PREFERENCES =                 "openweather_params";              // Ключ для SharedPreferences
+    public static final String APP_PREFERENCES =                  "openweather_params";              // Ключ для SharedPreferences
     private static final String APP_PREFERENCES_TIME_WEATHER =    "openweather_weather_time";        // Ключ для времени последнего получения данных о погоде из сервиса
     private static final String APP_PREFERENCES_TIME_FORCAST =    "openweather_forcast_time";        // Ключ для времени последнего получения данных о прогнозе из сервиса
     private static final String APP_PREFERENCES_PENDING_FILES =   "openweather_pending_files";       // Ключ для сета из имен незагруженных файлов
-    public static final String APP_PREFERENCES_ALL_COUNTRIES =   "openweather_all_countries";       // Ключ для списка всех стран в базе данных
+    public static final String APP_PREFERENCES_ALL_COUNTRIES =    "openweather_all_countries";       // Ключ для списка всех стран в базе данных
     private static final String APP_PREFERENCES_LOCATION_FLAG =   "openweather_location_flag";       // Ключ для переменной переключения режима автолокация / указание места вручную
     private static final String APP_PREFERENCES_CURRENT_TOWN_ID = "openweather_current_town_id";     // Ключ для currentTownId
     private static final String APP_PREFERENCES_LATITUDE =        "openweather_latitude";            // Ключи для сохранения координат
     private static final String APP_PREFERENCES_LONGITUDE =       "openweather_longitude";
-    public static final String APP_PREFERENCES_DATABASE =        "openweather_database";            // Ключи для сохранения статуса создания базы данных
-    public static final String APP_PREFERENCES_DB_CREATING =     "openweather_database_db_creating";// Значение параметра на этапе создания базы данных
-    public static final String APP_PREFERENCES_DB_DONE =         "openweather_database_db_done";    // Значение параметра на этапе после создания базы данных
-    private Set<String> pendingFiles = new HashSet<>();                                                     // Set с именами файлов в очереди на загрузку (незагруженных по причине отсутствия интернет-соединения)
+    public static final String APP_PREFERENCES_DATABASE =         "openweather_database";            // Ключи для сохранения статуса создания базы данных
+    public static final String APP_PREFERENCES_DB_CREATING =      "openweather_database_db_creating";// Значение параметра на этапе создания базы данных
+    public static final String APP_PREFERENCES_DB_DONE =          "openweather_database_db_done";    // Значение параметра на этапе после создания базы данных
+    private Set<String> pendingFiles = new HashSet<>();                                              // Set с именами файлов в очереди на загрузку (незагруженных по причине отсутствия интернет-соединения)
 
-    private static final int INTENT_FIND_SETTLEMENT = 1000;                                      // Ключ для вызова FindSettlementActivity
-    public static final String INTENT_CURRENT_COUNTRY = "openweather_current_country";          // Ключ для передачи текущей страны в FindSettlementActivity
-    public static final String INTENT_CURRENT_TOWN = "openweather_current_town";                // Ключ для передачи текущего города в FindSettlementActivity
-    public static final String INTENT_CURRENT_TOWN_ID = "openweather_current_town_id";          // Ключ для передачи выбранного id города из FindSettlementActivity
+    private static final int INTENT_FIND_SETTLEMENT = 1000;                                          // Ключ для вызова FindSettlementActivity
+    public static final String INTENT_CURRENT_COUNTRY = "openweather_current_country";               // Ключ для передачи текущей страны в FindSettlementActivity
+    public static final String INTENT_CURRENT_TOWN = "openweather_current_town";                     // Ключ для передачи текущего города в FindSettlementActivity
+    public static final String INTENT_CURRENT_TOWN_ID = "openweather_current_town_id";               // Ключ для передачи выбранного id города из FindSettlementActivity
 
     private FusedLocationProviderClient mClient;                    // Объекты для определения местоположения через сервис Google Play
     private SettingsClient mSettingsClient;
@@ -113,15 +113,6 @@ public class MainActivity extends AppCompatActivity
     private static final int HIGH_ACCURACY = LocationRequest.PRIORITY_HIGH_ACCURACY;
 
     private ObjectMapper mapper;                                    // Объект Jackson для парсинга Json-файлов
-
-    private CountingIdlingResource countingIdlingResource;          // Объект-семафор для ожидания выполнения тестов при выполнении длительных операций типа загрузки файлов
-                                                                    // или заполнения базы данных городов
-    public CountingIdlingResource getCountingIdlingResource() {
-        return countingIdlingResource;
-    }
-    public void setCountingIdlingResource(CountingIdlingResource countingIdlingResource) {
-        this.countingIdlingResource = countingIdlingResource;
-    }
 
     private ImageView imageView;                                    // Поля представления
     private TextView descriptionText;
@@ -183,7 +174,7 @@ public class MainActivity extends AppCompatActivity
                     {
                         //Toast.makeText(context, R.string.error_creating_database, Toast.LENGTH_LONG).show();
                     }
-                    if(countingIdlingResource != null && !countingIdlingResource.isIdleNow()) countingIdlingResource.decrement();
+                    countingIdlingResourceChange(false);
                     return;
                 }
 
@@ -199,10 +190,10 @@ public class MainActivity extends AppCompatActivity
                         File newFile = new File(fileName + "_");    // Для гарантии, что он правильно скачался с сервиса
                         file.renameTo(newFile);
                         Toast.makeText(context, R.string.start_creating_database, Toast.LENGTH_LONG).show();
-                        if(countingIdlingResource != null) countingIdlingResource.increment();
+                        countingIdlingResourceChange(true);
                         FillingDatabase.start(getApplicationContext(), newFile.toString());
                     }
-                    if(countingIdlingResource != null && !countingIdlingResource.isIdleNow()) countingIdlingResource.decrement();
+                    countingIdlingResourceChange(false);
                     return;
                 }
 
@@ -219,7 +210,7 @@ public class MainActivity extends AppCompatActivity
                         readWeather();
                         redrawWeather();
                     }
-                    if(countingIdlingResource != null && !countingIdlingResource.isIdleNow()) countingIdlingResource.decrement();
+                    countingIdlingResourceChange(false);
                     return;
                 }
 
@@ -236,7 +227,7 @@ public class MainActivity extends AppCompatActivity
                         readForcast();
                         redrawForcast();
                     }
-                    if(countingIdlingResource != null && !countingIdlingResource.isIdleNow()) countingIdlingResource.decrement();
+                    countingIdlingResourceChange(false);
                     return;
                 }
 
@@ -252,7 +243,8 @@ public class MainActivity extends AppCompatActivity
 
                 if (weatherAdapter != null)                             // Или делаем перерисовку RecyclerView, если он оттуда
                     weatherAdapter.notifyDataSetChanged();
-                if(countingIdlingResource != null && !countingIdlingResource.isIdleNow()) countingIdlingResource.decrement();
+                countingIdlingResourceChange(false);
+
             }
         }
     }
@@ -299,7 +291,7 @@ public class MainActivity extends AppCompatActivity
 
         mainHandler = new Handler();
 
-        mapper = new ObjectMapper();                                                         // Объект Jackson для парсинга Json-файлов
+        mapper = new ObjectMapper();                                // Объект Jackson для парсинга Json-файлов
 
         // Контролы представления
         imageView = findViewById(R.id.image);
@@ -432,7 +424,7 @@ public class MainActivity extends AppCompatActivity
                 dbStatus = sharedPreferences.getString(APP_PREFERENCES_DATABASE, "");
             if(!dbStatus.equals(APP_PREFERENCES_DB_DONE))
             {
-                if(countingIdlingResource != null) countingIdlingResource.increment();
+                countingIdlingResourceChange(true);
                 FillingDatabase.start(getApplicationContext(), townListFile.toString());
             }
         }
@@ -445,7 +437,7 @@ public class MainActivity extends AppCompatActivity
             pendingFiles = sharedPreferences.getStringSet(APP_PREFERENCES_PENDING_FILES, new HashSet<>());
 
         if(isInternetAvailable) {           // Интернет есть - делаем запросы на загрузку файлов
-            if(countingIdlingResource != null) countingIdlingResource.increment();
+            countingIdlingResourceChange(true);
             String cacheDir = getCacheDir().toString() + "/";
             switch (filename) {
                 case cityList:
@@ -887,4 +879,54 @@ public class MainActivity extends AppCompatActivity
                 break;
         }
     }
+
+    private CountingIdlingResource countingIdlingResource;          // Объект-семафор для ожидания выполнения тестов при выполнении длительных операций типа загрузки файлов
+    // или заполнения базы данных городов
+    public CountingIdlingResource getCountingIdlingResource() {
+        return countingIdlingResource;
+    }
+    public void setCountingIdlingResource(CountingIdlingResource countingIdlingResource) {
+        this.countingIdlingResource = countingIdlingResource;
+    }
+
+    private static int countingIdlingResourceCount;
+
+    private void countingIdlingResourceChange(boolean increase) {       // Метод для обработки CountingIdlingResource (увеличение или уменьшение счетчика семафора)
+
+        if(countingIdlingResource == null) {
+            if(increase)
+                countingIdlingResourceCount++;
+            else {
+                countingIdlingResourceCount--;
+                if(countingIdlingResourceCount < 0)
+                    countingIdlingResourceCount = 0;
+            }
+            Log.d(TAG, "countingIdlingResource = null increase = " + increase + " countingIdlingResourceCount = " + countingIdlingResourceCount);
+
+            return;
+        }
+
+        while (countingIdlingResourceCount > 0)
+        {
+            countingIdlingResource.increment();
+            countingIdlingResourceCount--;
+            Log.d(TAG, "countingIdlingResource != null, countingIdlingResourceCount decreasing, countingIdlingResourceCount = " + countingIdlingResourceCount + " isIdleNow() = " + countingIdlingResource.isIdleNow());
+        }
+
+        if(increase) {
+            countingIdlingResource.increment();
+            Log.d(TAG, "countingIdlingResource.increment()");
+        }
+        else {
+            if(!countingIdlingResource.isIdleNow()) {
+                countingIdlingResource.decrement();
+                Log.d(TAG, "countingIdlingResource.decrement  isIdleNow() = " + countingIdlingResource.isIdleNow());
+            }
+            else
+            {
+                Log.d(TAG, "Try to decrement countingIdlingResource in Idle state");
+            }
+        }
+    }
+
 }
