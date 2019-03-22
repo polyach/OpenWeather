@@ -11,6 +11,7 @@ import android.support.test.espresso.idling.CountingIdlingResource;
 import android.support.test.rule.*;
 import android.support.test.runner.AndroidJUnit4;
 import android.view.Surface;
+import android.widget.TextView;
 
 import org.junit.After;
 import org.junit.Before;
@@ -24,10 +25,12 @@ import java.util.concurrent.TimeUnit;
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.*;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
 import static android.support.test.espresso.contrib.RecyclerViewActions.scrollToPosition;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.*;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(AndroidJUnit4.class)
@@ -59,7 +62,7 @@ public class MainActivityTest {
             default:
                 activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
-        idlingResource = activity.getCountingIdlingResource();      // CountingIdlingResource - объект-семафор, устанавливаемый в MainActivity при выполнении длительных операций
+        //idlingResource = activity.getCountingIdlingResource();      // CountingIdlingResource - объект-семафор, устанавливаемый в MainActivity при выполнении длительных операций
         IdlingRegistry.getInstance().register(idlingResource);      // Регистрация CountingIdlingResource для ожидания окончания операции
     }
 
@@ -103,6 +106,7 @@ public class MainActivityTest {
 
     @Test
     public void chooseMagadan() throws Exception {
+        String prefix = "magad";
         onView(withId(R.id.find_item)).perform(click());
         Thread.sleep(3500);
         onData(equalTo("RU")).perform(click(), click());
@@ -110,9 +114,10 @@ public class MainActivityTest {
         onView(withId(R.id.search_menu_item)).perform(click());
         //onView(withId(R.id.spinner_countries)).perform(actionOnItemAtPosition(100, click()));
         //onView(withId(R.id.recycler_view_towns)).perform(actionOnItemAtPosition(3736, click()));
-        onView(withId(R.id.search_src_text)).perform(typeText("magad"), ViewActions.closeSoftKeyboard());
+        onView(withId(R.id.search_src_text)).perform(typeText(prefix), ViewActions.closeSoftKeyboard());
         Thread.sleep(500);
         onView(withId(R.id.recycler_view_towns)).perform(actionOnItemAtPosition(0, click()));
+        onView(withId(R.id.city)).check(matches(withText(startsWith("Magad"))));
         Thread.sleep(3000);
         onView(withId(R.id.location_item)).perform(click());
         Thread.sleep(1000);
@@ -120,6 +125,11 @@ public class MainActivityTest {
 
     @Test
     public void countriesNumberTest() {
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         Context appContext = InstrumentationRegistry.getTargetContext();
         SharedPreferences sharedPreferences = appContext.getSharedPreferences(MainActivity.APP_PREFERENCES, Context.MODE_PRIVATE);
         Set<String> countries = sharedPreferences.getStringSet(MainActivity.APP_PREFERENCES_ALL_COUNTRIES, null);
