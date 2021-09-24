@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">OpenWeather</string>
+
+    <string name="your_town">Ваш город</string>
+    <string name="pressure">ДАВЛЕНИЕ</string>
+    <string name="pressure_units">гПа</string>
+    <string name="humidity">ВЛАЖНОСТЬ</string>
+    <string name="clouds">ОБЛАЧНОСТЬ</string>
+    <string name="wind">ВЕТЕР</string>
+    <string name="wind_units">м/с</string>
+    <string name="day_duration">ДОЛГОТА ДНЯ</string>
+
+    <string name="GPS_is_not_available">Google Play Service недоступен</string>
+    <string name="location_permission_denied">Служба определения местоположения запрещена</string>
+    <string name="file_reading_error">Ошибка при чтении файла</string>
+    <string name="reading_weather_error">Ошибка при чтении погодных данных</string>
+    <string name="reading_forecast_error">Ошибка при чтении данных прогноза погоды</string>
+    <string name="can_not_find_location">Не могу обнаружить местоположение</string>
+    <string name="no_internet_connection">Интернет-соединение потеряно</string>
+    <string name="error_creating_database">Ошибка при создании базы данных</string>
+    <string name="location_service_unavailable">Сервис автолокации недоступен</string>
+    <string name="rain">ДОЖДЬ</string>
+    <string name="snow">СНЕГ</string>
+    <string name="rain_snow_units">мм</string>
+    <string name="high">Выс.</string>
+    <string name="normal">Норм.</string>
+    <string name="low">Низк.</string>
+    <string name="precipitation_for_3_hours">мм за 3 ч</string>
+    <string name="towns_read">городов найдено</string>
+    <string name="x_min_ago">мин. назад</string>
+    <string name="find">Найти</string>
+    <string name="my_location">По местоположению</string>
+    <string name="north"> с.ш.</string>
+    <string name="south"> ю.ш.</string>
+    <string name="east"> в.д.</string>
+    <string name="west"> з.д.</string>
+    <string name="country">Страна:</string>
+    <string name="settlements_found">Найдено\nпоселений:</string>
+    <string name="chosen">Выбрано:</string>
+    <string name="start_creating_database">Начало создания базы данных городов</string>
+    <string name="database_created">База данных городов создана</string>
+    <string name="settlements_found1">городов найдено</string>
+
+</resources>
